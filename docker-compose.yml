@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+    musicbot:
+        build: ./bot
+        restart: always
+        volumes:
+        - /home/hoge/musicbot/config:/var/docker/musicbot/musicbot_clone/config
