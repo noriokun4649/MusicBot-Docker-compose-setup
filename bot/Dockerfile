@@ -1,31 +1,25 @@
-FROM ubuntu:18.04
+FROM python:3.7.9-alpine3.12
 
 # Add project source
 WORKDIR /var/docker/musicbot
 COPY requirements.txt ./
 
-
-
-# Install build tools
-RUN apt-get update -y
-RUN apt-get install build-essential unzip -y
-RUN apt-get install software-properties-common -y
-
-# Install system dependencies
-RUN apt-get install git ffmpeg libopus-dev libffi-dev libsodium-dev python3-pip -y
-RUN apt-get upgrade -y
-
-# Install Python dependencies
-RUN python3 -m pip install -U pip
-RUN python3 -m pip install -U -r requirements.txt
-
-RUN git clone https://github.com/Just-Some-Bots/MusicBot.git musicbot_clone
+RUN apk update && \
+    apk upgrade && \
+    apk --no-cache --virtual add make g++ gcc unzip && \
+    apk --no-cache add git ffmpeg opus-dev libffi-dev libsodium-dev && \
+    python3 -m pip install -U pip && \
+    python3 -m pip install -U -r requirements.txt && \
+    git clone https://github.com/Just-Some-Bots/MusicBot.git musicbot_clone && \
+    apk del
 
 WORKDIR /var/docker/musicbot/musicbot_clone
 
 # Create volume for mapping the config
 VOLUME /var/docker/musicbot/musicbot_clone/config
 VOLUME /var/docker/musicbot/musicbot_clone/audio_cache
+
+COPY requirements.txt ./
 
 ENV APP_ENV=docker
 
